@@ -1,0 +1,113 @@
+---
+layout: page
+title: "R 헬스케어"
+subtitle: "해부학(anatogram)"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+tags: ["데이터 과학", "Data Science", "데이터 사이언스", "헬스케어"]
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography-health.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+
+# 해부 그래프 문법 ([`gganatogram`](https://github.com/jespermaag/gganatogram)) {#gganatogram}
+
+[`gganatogram`](https://github.com/jespermaag/gganatogram) 팩키지를 설치하고 헬로 월드 기본 데이터를 만들어본다.
+
+```{r install-package}
+library(tidyverse)
+library(gganatogram) # devtools::install_github("jespermaag/gganatogram")
+
+organ_tbl <- tibble(organ = c("heart", "leukocyte", "nerve", "brain", "liver", "stomach", "colon"), 
+                    type = c("circulation", "circulation",  "nervous system", "nervous system", "digestion", "digestion", "digestion"), 
+                    colour = c("red", "red", "purple", "purple", "orange", "orange", "orange"), 
+                    value = c(10, 5, 1, 8, 2, 5, 5))
+
+organ_tbl
+```
+
+
+`gganatogram()` 함수를 사용해서 시각화를 한다.
+
+```{r visualize-organ}
+organ_tbl %>% 
+  gganatogram(fillOutline='#a6bddb', organism='human', sex='male', fill="colour") +
+  theme_void()
+```
+
+# 해부 데이터 {#gganatogram-data}
+
+`hgMale_key` 를 통하면 기본 장기에 대한 정보를 얻을 수 있고, `get_anatogram()` 함수를 통해 각 장기에 대한 이미지 원본 데이터를 확인할 수 있다.
+
+```{r anatogram-data-organ}
+male_organs <- gganatogram::get_anatogram(organism = "human", sex = "male")
+
+male_organs$lung %>% 
+  as_tibble()
+```
+
+시각화할 장기 데이터를 유형별로 장기를 찾아보자.
+
+```{r anatogram-data}
+# gganatogram::get_anatogram(organism = "human", sex = "male")
+
+hgMale_key %>% 
+  select(type, organ, colour, value) %>% 
+  arrange(type) %>% 
+  reactable::reactable()
+```
+
+앞서 시각화시킬 장기를 시각화시켜보자.
+
+```{r anatogram-data2}
+# gganatogram::get_anatogram(organism = "human", sex = "male")
+
+hgMale_key %>% 
+  select(type, organ, colour, value) %>% 
+  arrange(type) %>% 
+  gganatogram(outline=F, fillOutline='#a6bddb', organism='human', sex='male', fill="colour") +
+  theme_void()
+
+```
+
+
+# 호흡기 폐(lung) {#gganatogram-data-lung}
+
+호흡기와 연관된 장기만 추려내 시각화면 다음과 같다.
+
+```{r lung-anatomy}
+hgMale_key %>% 
+  filter(type == "respiratory") %>% 
+  mutate(colour = case_when(organ  == "diaphragm" ~ "steelblue",
+                            organ  == "lung"      ~ "midnightblue",
+                            organ  == "bronchus"  ~ "violet")) %>% 
+  gganatogram(outline=TRUE, fillOutline='white', organism='human', sex='male', fill="colour") + 
+  theme_void()
+```
+
+
