@@ -1,0 +1,148 @@
+---
+layout: page
+title: "R 헬스케어"
+subtitle: "`ggplot` + `rayshader`"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+tags: ["데이터 과학", "Data Science", "데이터 사이언스", "헬스케어", "ggplot", "rayshader"]
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography-health.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+
+# `mpg` 3D 시각화 {#rayshader-ggplot3d}
+
+[018_rayshader_ggplot_3d](https://github.com/business-science/free_r_tips/tree/master/018_rayshader_ggplot_3d) 사례를 참조하여 `ggplot`으로 작성한 2 차원 그래프를 `rayshader`의 도움을 얻어 3차원으로 시각화해 보자.
+
+```{r rayshader, eval = FALSE}
+# LIBRARIES ----
+
+library(rayshader)
+library(tidyverse)
+extrafont::loadfonts()
+
+# 3D DATA PLOT ----
+
+mtcars_g <- mtcars %>%
+    ggplot(aes(disp, mpg, color = cyl)) +
+      geom_point(size=2) +
+      scale_color_continuous(limits=c(0,8)) +
+      labs(title = "mtcars: 배기량, 실린더 수, 연비",
+           color = "실린더 수") +
+      theme_bw(base_family = "NanumGothic") +
+      theme(title = element_text(size=8),
+            text = element_text(size=12))
+
+
+# rayshader rendering with manipulation
+# mtcars_g %>%
+#     plot_gg(
+#         height        = 3,
+#         width         = 3.5,
+#         multicore     = TRUE,
+#         pointcontract = 0.7,
+#         soliddepth    = -200
+#     )
+
+mtcars_g %>%
+    plot_gg(
+        height        = 3,
+        width         = 3.5,
+        multicore     = TRUE,
+        pointcontract = 0.7,
+        soliddepth    = -200
+    )
+
+# render_camera(fov = 70, zoom = 0.75, theta = -30, phi = 30)
+# Sys.sleep(0.2)
+# render_snapshot(clear = FALSE)
+
+render_movie("fig/movie_mtcars.mp4", frames = 260, fps=30, zoom=1, fov = 30)
+```
+
+![](fig/movie_mtcars.mp4)
+
+# 화산 행렬 3D 시각화 {#rayshader-volcano-3d}
+
+```{r volcano-rayshader, eval = FALSE}
+
+# 3D ELEVATION MATRIX ----
+# volcano
+# 
+# volcano %>% class()
+
+# volcano_tbl <- volcano %>%
+#     as_tibble(.name_repair = "minimal") %>%
+#     set_names(str_c("V", seq_along(names(.)))) %>%
+#     rowid_to_column(var = "x") %>%
+#     pivot_longer(
+#         cols      = contains("V"),
+#         names_to  = "y",
+#         values_to = "value"
+#     ) %>%
+#     mutate(y = str_remove(y, "^V") %>% as.numeric())
+# 
+# g2 <- volcano_tbl %>%
+#     ggplot(aes(x = x, y = y, fill = value)) +
+#       geom_tile() +
+#       geom_contour(aes(z = value), color = "black") +
+#       scale_x_continuous("X", expand = c(0,0)) +
+#       scale_y_continuous("Y",expand = c(0,0)) +
+#       scale_fill_gradientn("Z", colours = terrain.colors(10)) +
+#       coord_fixed()
+
+# rayshader
+
+# g2 %>%
+#     plot_gg(
+#         multicore = TRUE,
+#         raytrace = TRUE,
+#         width = 7,
+#         height = 4,
+#         scale = 300,
+#         windowsize = c(1400, 866),
+#         zoom = 0.6,
+#         phi = 30,
+#         theta = 30
+#     )
+
+
+
+# 3D Elevation Plots ----
+# - plot_3d from matrix
+library(av)
+
+volcano %>%
+    sphere_shade() %>%
+    plot_3d(volcano, zscale = 3)
+
+render_movie("fig/movie_volcano.mp4",frames = 720, fps=30, zoom=0.6, fov = 30)
+```
+
+![](fig/movie_volcano.mp4)
+
