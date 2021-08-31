@@ -1,0 +1,83 @@
+---
+layout: page
+title: "R 헬스케어"
+subtitle: "R 팩키지 `medicaldata`"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+tags: ["데이터 과학", "Data Science", "데이터 사이언스", "헬스케어", "데이터셋"]
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography-health.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+
+# `medicaldata` {#medicaldata}
+
+[medicaldata](https://github.com/higgi13425/medicaldata/) 의학계 교육용 목적으로 제작된 R 데이터 팩키지다. 현재 데이터는 총 15개 이용가능하다.
+
+1. Streptomycin in Tuberculosis (`strep_tb`)
+1. Scurvy RCT (`scurvy`)
+1. Indomethacin RCT to Prevent Post-ERCP Pancreatitis (`indo_rct`)
+1. Sulindac RCT for polyps (`polyps`)
+1. Covid Testing (`covid_testing`)
+1. Blood Storage (prostate cancer) (`blood_storage`)
+1. Cytomegalovirus in BMT (`cytomegalovirus`)
+1. Esophageal cancer (`esoph_ca`)
+1. Laryngoscope (`laryngoscope`)
+1. Licorice gargle (`licorice_gargle`)
+1. Obstetric Periodontal Therapy (`opt`)
+1. Smartpill (`smartpill`)
+1. Supraclavicular (`supraclavicular`)
+1. Indomethacin Pharmacokinetics (`indometh`)
+1. Theophylline Pharmacokinetics (`theoph`)
+
+# 의학 표 제작 [^janitor-table] {#medical-table}
+
+[^janitor-table]: [`medicaldata` - making_tables](https://higgi13425.github.io/medicaldata/articles/making_tables.html)
+
+`janitor` 팩키지 기능을 사용하면 의학 표 제작을 수월하고 직관적으로 제작할 수 있다.
+
+```{r make-simple-table}
+library(medicaldata)
+library(tidyverse)
+library(janitor)
+library(flextable)
+
+strep_tb <- medicaldata::strep_tb
+
+strep_tb %>% 
+  tabyl(radiologic_6m, arm) %>% #2 dimensional table, RxC
+  adorn_totals(where = "row") %>% # add totals row
+  adorn_percentages("col") %>%  # column-wise percentages
+  adorn_pct_formatting() %>% 
+  adorn_ns(position = "rear")  %>%  # put n first
+  flextable::flextable()
+```
+
+
+
+
