@@ -1,0 +1,74 @@
+---
+layout: page
+title: "R 헬스케어"
+subtitle: "세포(Cell) 이미지"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+tags: ["데이터 과학", "Data Science", "데이터 사이언스", "헬스케어", "세포", "Cell"]
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography-health.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+
+# 세포 팩키지 [^cell-pkg] {#cell-pkg}
+
+[^cell-pkg]: [`drawCell` - The goal of drawCell is to easily obtain nice cell pictures in R!](https://github.com/svalvaro/drawCell)
+
+`drawCell()` 함수가 주요 역할을 담당하는 함수이며 두가지 인자가 중요하다.
+
+- `taxonomy_id`: https://www.ncbi.nlm.nih.gov/taxonomy/
+- `sl_ids`: http://current.geneontology.org/ontology/external2go/uniprotkb_sl2go
+
+## 사례 {#case-study}
+
+- Homo sapiens (Taxonomy id: 9606)
+- Endoplasmic Reticulum (SL code: 0095) and lipid droplets (SL code: 0154)
+
+```{r drawCell, eval = FALSE}
+# devtools::install_github("svalvaro/drawCell")
+library(drawCell)
+
+drawCell(taxonomy_id = '9606', 
+         sl_ids = c('0095','0154'), 
+         color = 'yellow')
+```
+
+![](fig/cell-case-one.png)
+
+- 58334: Quercus ilex a common tree in the south of Spain
+- 0049: the chloroplast
+
+```{r drawCell-case2, eval = FALSE}
+drawCell(taxonomy_id = '58334',
+         sl_ids = '0049',
+         size = 2000,
+         color = 'lightblue')
+```
+
+![](fig/cell-case-two.png)
+

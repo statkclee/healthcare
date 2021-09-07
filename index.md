@@ -14,6 +14,7 @@ subtitle: 데이터 과학 예술
 ## 학습목차 
 
 1. [해부학(anatogram)](healthcare-anatogram.html)
+1. [세포(Cell) 이미지](healthcare-cell.html)
 1. 3D 그래프
     - [`ggplot` + `rayshader`](healthcare-rayshader.html)
 1. 데이터셋
